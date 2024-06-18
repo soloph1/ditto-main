@@ -1,0 +1,26 @@
+# Compiler files
+cache/
+out/
+artifacts
+
+# Ignores development broadcast logs
+/broadcast
+
+# Docs
+docs/
+
+# Dotenv file
+.env
+.env.save
+
+# submodules
+.deps
+coverage
+
+# Remix compiler config
+compiler_config.json
+
+# Rest / private / etc. 
+automated_test.sh
+*lcov*
+.DS_Store

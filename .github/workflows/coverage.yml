@@ -1,0 +1,71 @@
+name: Generate Coverage Report Ditto
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  coverage-report:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Cache Foundry and other downloads
+      id: cache-downloads
+      uses: actions/cache@v2
+      with:
+        path: |
+          /home/runner/.config/.foundry/bin
+          ./lib
+        key: downloads-${{ runner.os }}-${{ hashFiles('**/lockfiles', '.gitmodules') }}
+
+    - name: Install Foundryup and setup submodules
+      if: steps.cache-downloads.outputs.cache-hit != 'true'
+      run: |
+        curl -L https://foundry.paradigm.xyz | bash
+        FOUNDRYUP_PATH=$(find /home/runner -name "foundryup" 2>/dev/null)
+        echo "Found foundryup at: $FOUNDRYUP_PATH"
+        $FOUNDRYUP_PATH
+        chmod +x ./submodules.sh
+        sh ./submodules.sh
+    - name: Install lcov
+      run: sudo apt-get install lcov
+        
+    - name: Add binaries to PATH
+      run: |
+        echo "/home/runner/.config/.foundry/bin" >> $GITHUB_PATH
+        forge --version || echo "Forge is not installed or not in PATH"
+
+    - name: Run forge coverage
+      run: forge coverage --ir-minimum --report lcov
+      env:
+        POLYGON_RPC_URL: ${{ secrets.POLYGON_RPC_URL }}
+        BNB_RPC_URL: ${{ secrets.BNB_RPC_URL }}
+        ARB_RPC_URL: ${{ secrets.ARB_RPC_URL }}
+    - name: Cut lcov.info 
+      run: lcov --rc lcov_branch_coverage=1 --remove lcov.info --output-file filtered-lcov.info "*test*" "*script*"
+
+    - name: Upload lcov.info as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: lcov-info
+        path: lcov.info
+        
+    - name: Upload filtered-lcov.info as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: filtered-lcov.info
+        path: filtered-lcov.info
+        
+    - name: Generate HTML report
+      run: genhtml filtered-lcov.info --branch-coverage --output-dir coverage
+
+    - name: Publish to Cloudflare Pages
+      uses: cloudflare/pages-action@v1
+      with:
+       apiToken: ${{ secrets.CF_API_TOKEN }}
+       accountId: ${{ secrets.CF_ACCOUNT_ID}}
+       projectName: ditto-audit
+       directory: ./coverage/
+       branch: main

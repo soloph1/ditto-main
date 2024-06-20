@@ -28,7 +28,7 @@ import {DexLogicLib} from "../../src/vault/libraries/DexLogicLib.sol";
 
 import {FullDeploy, Registry, VaultProxyAdmin} from "../../script/FullDeploy.s.sol";
 
-contract TestEntryPointLogic is Test, FullDeploy {
+contract TestEntryPointLogicPolygon is Test, FullDeploy {
     bool isTest = true;
 
     address gelato;
@@ -52,7 +52,7 @@ contract TestEntryPointLogic is Test, FullDeploy {
     bytes[] multicallData;
 
     function setUp() external {
-        vm.createSelectFork(vm.envString("POL_RPC_URL"));
+        vm.createSelectFork(vm.envString("POL_RPC_URL"), 58321464);
         vm.txGasPrice(80000000000);
 
         poolFee = pool.fee();

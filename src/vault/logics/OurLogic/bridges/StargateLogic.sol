@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.19;
 
 import {IStargateComposer} from "../../../interfaces/external/stargate/IStargateComposer.sol";
 import {IStargateFactory} from "../../../interfaces/external/stargate/IStargateFactory.sol";

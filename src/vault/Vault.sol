@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.19;
 
 import {SSTORE2} from "./libraries/utils/SSTORE2.sol";
 import {BinarySearch} from "./libraries/utils/BinarySearch.sol";

@@ -1,17 +1,22 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.19;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {Kernel} from "@kernel/Kernel.sol";
 import {IDittoEntryPoint} from "./IDittoEntryPoint.sol";
+import {IAutomationRegistry} from "./IAutomationRegistry.sol";
 
 contract DittoEntryPoint is AccessControl, IDittoEntryPoint {
     bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
 
+    address public automationRegistry;
     Workflow[] private workflows;
     mapping(address vaultAddress => mapping(uint256 workflowId => uint256))
         private vaultWorkflowToIndex; // starts from index 1
 
-    constructor() {}
+    constructor(address _automationRegistry) {
+        automationRegistry = _automationRegistry;
+    }
 
     // Registers a workflow associated with a vault
     function registerWorkflow(uint256 workflowId) external override {
@@ -37,7 +42,13 @@ contract DittoEntryPoint is AccessControl, IDittoEntryPoint {
             revert DittoEntryPoint__WorkflowNotRegistered();
         }
 
-        // vaultAddress.run(workflowId);
+        IAutomationRegistry.AutomationDetail
+            memory automation = IAutomationRegistry(automationRegistry)
+                .getAutomation(vaultAddress, workflowId);
+        Kernel(payable(vaultAddress)).execute(
+            automation.execMode,
+            automation.executionCalldata
+        );
 
         emit DittoEntryPointRun(vaultAddress, workflowId);
     }

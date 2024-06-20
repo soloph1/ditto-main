@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.19;
 
 /// @title IUpgradeLogic - UpgradeLogicinterface
 /// @dev Logic for upgrading the implementation of a proxy clone contract.

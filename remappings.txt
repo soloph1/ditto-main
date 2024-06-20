@@ -7,3 +7,4 @@ forge-std/=lib/forge-std/src/
 @uniswap/v3-periphery/=lib/v3-periphery/
 @gelato/=lib/gelato/
 @account-abstraction/=lib/account-abstraction
+@kernel/=lib/kernel/src/

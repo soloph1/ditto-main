@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.19;
 
 import {IPoolAddressesProvider} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 import {IPool} from "@aave/aave-v3-core/contracts/interfaces/IPool.sol";

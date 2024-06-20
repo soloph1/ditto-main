@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.19;
 
 import {Ownable} from "./external/Ownable.sol";
 import {TransferHelper} from "../src/vault/libraries/utils/TransferHelper.sol";

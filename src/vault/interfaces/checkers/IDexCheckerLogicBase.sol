@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.19;
 
 /// @title IDexCheckerLogicBase - DexCheckerLogicBase interface.
 /// @dev This interface provides the structure for the DexChecker logic and its storage components.

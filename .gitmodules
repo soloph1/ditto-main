@@ -30,3 +30,6 @@
 	path = lib/account-abstraction
 	url = https://github.com/eth-infinitism/account-abstraction
 	branch = v0.6.0
+[submodule "lib/kernel"]
+	path = lib/kernel
+	url = https://github.com/zerodevapp/kernel

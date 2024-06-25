@@ -4,29 +4,35 @@ pragma solidity ^0.8.19;
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {Kernel} from "@kernel/Kernel.sol";
 import {IDittoEntryPoint} from "./IDittoEntryPoint.sol";
-import {IAutomationRegistry} from "./IAutomationRegistry.sol";
+import {IAutomationExecutor} from "./IAutomationExecutor.sol";
 
 contract DittoEntryPoint is AccessControl, IDittoEntryPoint {
     bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
 
-    address public automationRegistry;
     Workflow[] private workflows;
     mapping(address vaultAddress => mapping(uint256 workflowId => uint256))
         private vaultWorkflowToIndex; // starts from index 1
 
-    constructor(address _automationRegistry) {
-        automationRegistry = _automationRegistry;
+    constructor() {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     // Registers a workflow associated with a vault
-    function registerWorkflow(uint256 workflowId) external override {
+    function registerWorkflow(
+        uint256 workflowId,
+        address executor
+    ) external override {
         address vaultAddress = msg.sender;
         if (vaultWorkflowToIndex[vaultAddress][workflowId] != 0) {
             revert DittoEntryPoint__WorkflowAlreadyRegistered();
         }
 
         workflows.push(
-            Workflow({vaultAddress: vaultAddress, workflowId: workflowId})
+            Workflow({
+                vaultAddress: vaultAddress,
+                workflowId: workflowId,
+                executor: executor
+            })
         );
         vaultWorkflowToIndex[vaultAddress][workflowId] = workflows.length;
 
@@ -42,14 +48,12 @@ contract DittoEntryPoint is AccessControl, IDittoEntryPoint {
             revert DittoEntryPoint__WorkflowNotRegistered();
         }
 
-        IAutomationRegistry.AutomationDetail
-            memory automation = IAutomationRegistry(automationRegistry)
-                .getAutomation(vaultAddress, workflowId);
-        Kernel(payable(vaultAddress)).execute(
-            automation.execMode,
-            automation.executionCalldata
-        );
+        IAutomationExecutor(
+            workflows[vaultWorkflowToIndex[vaultAddress][workflowId] - 1]
+                .executor
+        ).executeWorkflow(vaultAddress, workflowId);
 
+        // UPGRADE: Here, we can bring the logic from EntryPointLogic contract. (using DittoFeeBase)
         emit DittoEntryPointRun(vaultAddress, workflowId);
     }
 

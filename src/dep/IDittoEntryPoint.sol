@@ -7,10 +7,11 @@ interface IDittoEntryPoint {
     struct Workflow {
         address vaultAddress; // Address of the vault (SCA) associated with the workflow
         uint256 workflowId; // Unique identifier for the workflow
+        address executor;
     }
 
     // Registers a workflow associated with a vault
-    function registerWorkflow(uint256 workflowId) external;
+    function registerWorkflow(uint256 workflowId, address executor) external;
 
     // Executes a workflow
     function runWorkflow(address vaultAddress, uint256 workflowId) external;

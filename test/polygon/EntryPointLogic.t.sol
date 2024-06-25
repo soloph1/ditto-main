@@ -28,7 +28,7 @@ import {DexLogicLib} from "../../src/vault/libraries/DexLogicLib.sol";
 
 import {FullDeploy, Registry, VaultProxyAdmin} from "../../script/FullDeploy.s.sol";
 
-contract TestEntryPointLogicPolygon is Test, FullDeploy {
+contract TestEntryPointLogic is Test, FullDeploy {
     bool isTest = true;
 
     address gelato;
